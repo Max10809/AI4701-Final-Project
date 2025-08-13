@@ -1,0 +1,18 @@
+# Python cache / venv
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Jupyter / VSCode
+.ipynb_checkpoints/
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs / builds
+*.log
+dist/
+build/

@@ -271,23 +271,20 @@ def main():
         print("[CLEAN] DBSCAN 未找到簇，跳过")
 
 
-    # 3) 平移到原点
+
     center = pc.get_center()
     pc.translate(-center)
     print("[CLEAN] 平移质心到原点", center)
 
-    # 4) 归一化最长边到 1，再按需放大 (这里放大 5×)
     bbox = pc.get_axis_aligned_bounding_box()
-    scale1 = 1.0 / max(bbox.get_extent())  # 长边→1
+    scale1 = 1.0 / max(bbox.get_extent())  
     pc.scale(scale1, center=(0, 0, 0))
-    EXTRA = 1.0  # 想再放大倍数
+    EXTRA = 1.0  
     pc.scale(EXTRA, center=(0, 0, 0))
     print(f"[CLEAN] 归一化并额外放大 {EXTRA}×")
 
-    # 5) 保存
     save_ply(args.out, pc)
 
-    # 6) 弹窗查看
     o3d.visualization.draw_geometries([pc],
                                       window_name="PnP-SfM Cleaned", width=1280, height=720)
 

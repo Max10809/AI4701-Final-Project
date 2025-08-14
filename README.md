@@ -1,8 +1,8 @@
-# AI4701-Final-Project
+# AI4701-Final-Project(2025 Spring)
 
 ## Introduction
 Final project for the AI4701 Computer Vision course at SJTU.
-I implement 3D reconstruction of an indoor Triceratops scene from multi-view images using SIFT feature matching and PnP-based pose estimation, followed by triangulation to recover a sparse 3D structure. See report.pdf for detailed methodology and experiments.
+I implement 3D reconstruction of an indoor Triceratops scene from multi-view images using SIFT feature matching and PnP-based pose estimation, followed by triangulation to recover a sparse 3D structure. See report.pdf for detailed methodology, experiments and analysis.
 
 ## Reproducible outputs
 recon.ply — reconstructed sparse 3D point cloud
@@ -37,10 +37,19 @@ First download all the python requirements:
 - scipy
 - open3d
 - tqdm
+
 pip install numpy opencv-contrib-python matplotlib scipy open3d tqdm
 ```
+
 Paths below assume you are at the repo root.
-### 1) Minimal PnP reconstruction (no BA)
+### 1) SIFT feature extraction
+`python code/feature_extraction.py`
+### 2) SIFT feature matching
+`python code/feature_matching.py`
+### 3) Init recon
+`python code/init_recon.py`
+### 4) Minimal PnP reconstruction (no BA)
 `python code/pnp_recon.py`
-### 2)Full reconstruction script
+### 5)Full reconstruction script
 `python code/3d_recon.py`
+Results are saved to the repository root by default; you can modify the save directory in the code.

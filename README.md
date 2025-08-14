@@ -28,6 +28,17 @@ intrinsic_matrix.txt — camera intrinsic matrix (K)
 └── README.md
 ```
 ## How to run
+First download all the python requirements:
+```
+- Python 3.8+
+- numpy
+- opencv-contrib-python
+- matplotlib
+- scipy
+- open3d
+- tqdm
+pip install numpy opencv-contrib-python matplotlib scipy open3d tqdm
+```
 Paths below assume you are at the repo root.
 ### 1) Minimal PnP reconstruction (no BA)
 `python code/pnp_recon.py`

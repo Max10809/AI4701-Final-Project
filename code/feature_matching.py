@@ -1,10 +1,4 @@
 """
-feature_matching.py — 建立图像两两 SIFT 匹配并保存连线可视化
-================================================================
-1. match_features(img1, img2)  :  Lowe ratio → RANSAC-F 过滤，返回几何一致匹配。
-2. visualize_matches(img1, img2):  画匹配连线，保存到 matches/ 目录。
-3. __main__                     :  默认只画相邻视图，可自行修改遍历范围。
-
 依赖: OpenCV-contrib-python ≥ 4.x, NumPy, matplotlib
 """
 from __future__ import annotations
@@ -19,22 +13,18 @@ import numpy as np
 
 from feature_extraction import extract_features
 
-# --------------------------- 全局配置 ------------------------------------
 IMG_DIR   = Path("images")
 IMG_EXT   = ".jpg"
-IDX_RANGE = range(1, 63)                # 0001.jpg – 0062.jpg
+IDX_RANGE = range(1, 63)             
 MATCH_DIR = Path("matches")
 MATCH_DIR.mkdir(parents=True, exist_ok=True)
 
-# FLANN 配置 (SIFT / float32)
 _FLANN_INDEX_KDTREE = 1
 _FLANN_PARAMS  = dict(algorithm=_FLANN_INDEX_KDTREE, trees=5)
 _FLANN_SEARCH  = dict(checks=50)
 _RATIO_THRESH  = 0.75                    # Lowe ratio
 _RANSAC_THR_PX = 1.5                     # RANSAC 内点阈值 (像素)
-# ------------------------------------------------------------------------
 
-# --------------------------- 缓存 ---------------------------------------
 _cache: Dict[str, Tuple[List[cv2.KeyPoint], np.ndarray]] = {}
 
 def _get_features(img_path: str | Path):
@@ -44,15 +34,11 @@ def _get_features(img_path: str | Path):
         _cache[img_path] = extract_features(img_path)
     return _cache[img_path]
 
-
-# --------------------------- 主函数 -------------------------------------
 def match_features(img1: str | Path,
                    img2: str | Path,
                    ratio: float = _RATIO_THRESH,
                    ransac_thresh: float = _RANSAC_THR_PX):
     """
-    先用 Lowe ratio，再用 RANSAC-F 过滤错误匹配。
-
     Returns
     -------
     good_matches : list[cv2.DMatch]
@@ -63,13 +49,11 @@ def match_features(img1: str | Path,
     if des1 is None or des2 is None:
         return [], np.empty((0, 2), np.float32), np.empty((0, 2), np.float32)
 
-    # FLANN 需 float32
     des1 = des1.astype(np.float32)
     des2 = des2.astype(np.float32)
     matcher = cv2.FlannBasedMatcher(_FLANN_PARAMS, _FLANN_SEARCH)
     knn = matcher.knnMatch(des1, des2, 2)
-
-    # ---------- 1) Lowe ratio ----------
+                       
     good, pts1, pts2 = [], [], []
     for m, n in knn:
         if m.distance < ratio * n.distance:
@@ -77,10 +61,9 @@ def match_features(img1: str | Path,
             pts1.append(key1[m.queryIdx].pt)
             pts2.append(key2[m.trainIdx].pt)
 
-    if len(good) < 8:                           # F 估计至少 8 对
+    if len(good) < 8:                           
         return good, np.float32(pts1), np.float32(pts2)
 
-    # ---------- 2) RANSAC Fundamental ----------
     pts1_np = np.float32(pts1)
     pts2_np = np.float32(pts2)
     F, mask = cv2.findFundamentalMat(
@@ -88,7 +71,7 @@ def match_features(img1: str | Path,
         ransacReprojThreshold=ransac_thresh,
         confidence=0.999
     )
-    if F is None:                               # 退化 or 失败
+    if F is None:                               
         return good, pts1_np, pts2_np
 
     inl = mask.ravel().astype(bool)
@@ -97,7 +80,6 @@ def match_features(img1: str | Path,
 
 
 def visualize_matches(img1: str | Path, img2: str | Path, save: bool = True):
-    """绘制两图的匹配连线，并可保存到文件。"""
     good, _, _ = match_features(img1, img2)
     if not good:
         print(f"[WARN] 无匹配: {img1} ↔ {img2}")
@@ -127,8 +109,6 @@ def visualize_matches(img1: str | Path, img2: str | Path, save: bool = True):
     else:
         plt.show()
 
-
-# --------------------------- Demo 批量生成 -------------------------------
 if __name__ == "__main__":
     images = [IMG_DIR / f"{i:04d}{IMG_EXT}" for i in IDX_RANGE]
 

@@ -11,7 +11,7 @@ init_points.npy — 3D points (NumPy)
 
 init_pose.npz — camera poses (NumPy)
 
-intrinsic_matrix.txt — camera intrinsic matrix (K)
+extrinsic_matrix.txt — extrinsic matrix, vectorized along the main diagonal 
 
 ## Repository Structure
 ```
